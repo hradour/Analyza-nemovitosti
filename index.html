@@ -46,6 +46,13 @@
             min-width: 300px;
         }
 
+        .header-right {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
         h1 {
             color: #1e3c72;
             font-size: 2.5em;
@@ -55,6 +62,73 @@
         .subtitle {
             color: #666;
             font-size: 1.1em;
+        }
+
+        .update-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            padding: 10px 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .update-label {
+            font-size: 0.75em;
+            color: #666;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .update-time {
+            font-size: 0.95em;
+            color: #1e3c72;
+            font-weight: 600;
+        }
+
+        .refresh-button {
+            padding: 12px 20px;
+            background: #2a5298;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .refresh-button:hover {
+            background: #1e3c72;
+            transform: translateY(-2px);
+        }
+
+        .refresh-button:active {
+            transform: translateY(0);
+        }
+
+        .refresh-button.loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .refresh-icon {
+            display: inline-block;
+            transition: transform 0.5s ease;
+        }
+
+        .refresh-button.loading .refresh-icon {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         .location-selector {
@@ -150,6 +224,107 @@
 
         .empty-state-text {
             font-size: 1.2em;
+        }
+
+        .settings-section {
+            padding: 20px 0;
+        }
+
+        .settings-section h3 {
+            color: #1e3c72;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .time-inputs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .time-input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .time-input {
+            padding: 8px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+        }
+
+        .time-input:focus {
+            outline: none;
+            border-color: #2a5298;
+        }
+
+        .add-time-button, .remove-time-button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-time-button {
+            background: #27ae60;
+            color: white;
+        }
+
+        .add-time-button:hover {
+            background: #229954;
+        }
+
+        .remove-time-button {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .remove-time-button:hover {
+            background: #c0392b;
+        }
+
+        .save-settings-button {
+            padding: 12px 30px;
+            background: #2a5298;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+        }
+
+        .save-settings-button:hover {
+            background: #1e3c72;
+        }
+
+        .scheduled-times {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f4f8;
+            border-radius: 8px;
+            border-left: 4px solid #2a5298;
+        }
+
+        .scheduled-times h4 {
+            color: #1e3c72;
+            margin-bottom: 10px;
+        }
+
+        .scheduled-times p {
+            color: #666;
+            line-height: 1.6;
         }
 
         .stats-grid {
@@ -450,12 +625,22 @@
                     <h1>🏠 Analýza Nemovitostí</h1>
                     <p class="subtitle">Dashboard pro sledování a analýzu inzerátů na prodej a pronájem</p>
                 </div>
-                <div class="location-selector">
-                    <label class="location-label" for="locationSelect">📍 Vybraná lokalita:</label>
-                    <select id="locationSelect">
-                        <option value="Benátky nad Jizerou">Benátky nad Jizerou</option>
-                        <option value="Mladá Boleslav">Mladá Boleslav</option>
-                    </select>
+                <div class="header-right">
+                    <div class="update-info">
+                        <span class="update-label">Poslední aktualizace</span>
+                        <span class="update-time" id="lastUpdateTime">—</span>
+                    </div>
+                    <button class="refresh-button" id="refreshButton" onclick="manualRefresh()">
+                        <span class="refresh-icon">🔄</span>
+                        Aktualizovat
+                    </button>
+                    <div class="location-selector">
+                        <label class="location-label" for="locationSelect">📍 Vybraná lokalita:</label>
+                        <select id="locationSelect">
+                            <option value="Benátky nad Jizerou">Benátky nad Jizerou</option>
+                            <option value="Mladá Boleslav">Mladá Boleslav</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </header>
@@ -545,9 +730,40 @@
             </div>
 
             <div class="tab-content" id="info">
-                <div class="empty-state">
-                    <div class="empty-state-icon">⚙️</div>
-                    <div class="empty-state-text">Sekce info a nastavení je připravena pro budoucí obsah</div>
+                <div class="settings-section">
+                    <h3>⏰ Automatická aktualizace dat</h3>
+                    <p style="color: #666; margin-bottom: 20px;">
+                        Nastavte časy, kdy se mají data automaticky aktualizovat. Můžete přidat více časů během dne.
+                    </p>
+                    
+                    <div id="timeInputsContainer" class="time-inputs">
+                        <div class="time-input-group">
+                            <span>⏰</span>
+                            <input type="time" class="time-input" value="08:00">
+                            <button class="remove-time-button" onclick="removeTimeInput(this)">✕</button>
+                        </div>
+                    </div>
+                    
+                    <button class="add-time-button" onclick="addTimeInput()">+ Přidat další čas</button>
+                    
+                    <div style="margin-top: 30px;">
+                        <button class="save-settings-button" onclick="saveSchedule()">💾 Uložit nastavení</button>
+                    </div>
+                    
+                    <div class="scheduled-times" id="scheduledTimesInfo">
+                        <h4>📋 Aktuální plán aktualizací:</h4>
+                        <p id="scheduleDisplay">Zatím nejsou nastaveny žádné časy automatické aktualizace.</p>
+                    </div>
+                </div>
+
+                <div class="settings-section" style="margin-top: 40px; padding-top: 40px; border-top: 2px solid #e0e0e0;">
+                    <h3>ℹ️ Informace o aplikaci</h3>
+                    <p style="color: #666; line-height: 1.8;">
+                        <strong>Verze:</strong> 1.0.0<br>
+                        <strong>Sledované lokality:</strong> Benátky nad Jizerou, Mladá Boleslav<br>
+                        <strong>Zdroje dat:</strong> Sreality.cz, Bezrealitky.cz, Reality.idnes.cz<br>
+                        <strong>Poslední aktualizace aplikace:</strong> Říjen 2024
+                    </p>
                 </div>
             </div>
         </div>
@@ -586,6 +802,9 @@
 
         let filteredListings = [...listings];
         let currentLocation = WATCHED_LOCATIONS[0];
+        let lastUpdateTime = null;
+        let scheduledTimes = [];
+        let autoRefreshIntervals = [];
 
         // Statistiky
         function updateStats() {
@@ -719,6 +938,99 @@
             document.body.removeChild(link);
         }
 
+        // Aktualizace času poslední aktualizace
+        function updateLastUpdateTime() {
+            lastUpdateTime = new Date();
+            const timeString = lastUpdateTime.toLocaleString('cs-CZ', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('lastUpdateTime').textContent = timeString;
+        }
+
+        // Manuální refresh
+        function manualRefresh() {
+            const button = document.getElementById('refreshButton');
+            button.classList.add('loading');
+            button.disabled = true;
+
+            // Simulace načítání dat (v reálné aplikaci by zde byl fetch na API)
+            setTimeout(() => {
+                updateLastUpdateTime();
+                applyFilters();
+                button.classList.remove('loading');
+                button.disabled = false;
+            }, 1000);
+        }
+
+        // Přidání času pro automatickou aktualizaci
+        function addTimeInput() {
+            const container = document.getElementById('timeInputsContainer');
+            const newInput = document.createElement('div');
+            newInput.className = 'time-input-group';
+            newInput.innerHTML = `
+                <span>⏰</span>
+                <input type="time" class="time-input" value="12:00">
+                <button class="remove-time-button" onclick="removeTimeInput(this)">✕</button>
+            `;
+            container.appendChild(newInput);
+        }
+
+        // Odstranění času
+        function removeTimeInput(button) {
+            const container = document.getElementById('timeInputsContainer');
+            if (container.children.length > 1) {
+                button.parentElement.remove();
+            } else {
+                alert('Musí zůstat alespoň jeden čas!');
+            }
+        }
+
+        // Uložení plánu aktualizací
+        function saveSchedule() {
+            const timeInputs = document.querySelectorAll('.time-input');
+            scheduledTimes = Array.from(timeInputs).map(input => input.value).sort();
+            
+            // Vyčištění starých intervalů
+            autoRefreshIntervals.forEach(interval => clearInterval(interval));
+            autoRefreshIntervals = [];
+            
+            // Nastavení nových intervalů
+            scheduledTimes.forEach(time => {
+                checkAndScheduleUpdate(time);
+            });
+            
+            // Zobrazení uloženého plánu
+            const displayElement = document.getElementById('scheduleDisplay');
+            if (scheduledTimes.length > 0) {
+                displayElement.innerHTML = `Automatická aktualizace nastavena na: <strong>${scheduledTimes.join(', ')}</strong>`;
+            } else {
+                displayElement.textContent = 'Zatím nejsou nastaveny žádné časy automatické aktualizace.';
+            }
+            
+            alert('✅ Plán aktualizací byl úspěšně uložen!');
+        }
+
+        // Kontrola a naplánování aktualizace
+        function checkAndScheduleUpdate(scheduledTime) {
+            const [hours, minutes] = scheduledTime.split(':').map(Number);
+            
+            // Kontrola každou minutu, zda nastal čas aktualizace
+            const interval = setInterval(() => {
+                const now = new Date();
+                if (now.getHours() === hours && now.getMinutes() === minutes && now.getSeconds() === 0) {
+                    console.log(`Automatická aktualizace v ${scheduledTime}`);
+                    manualRefresh();
+                }
+            }, 1000);
+            
+            autoRefreshIntervals.push(interval);
+        }
+
         // Řazení tabulky
         let sortDirection = {};
         let currentSortColumn = null;
@@ -787,6 +1099,7 @@
 
         // Initialize
         initTabs();
+        updateLastUpdateTime();
         updateStats();
         renderTable();
         createCharts();
