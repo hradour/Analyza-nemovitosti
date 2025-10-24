@@ -463,8 +463,8 @@
         <div class="tabs-container">
             <div class="tabs">
                 <div class="tab active" data-tab="prehled">📊 Přehled</div>
-                <div class="tab" data-tab="ilustrace">🎨 Ilustrace</div>
-                <div class="tab" data-tab="info">ℹ️ Info</div>
+                <div class="tab" data-tab="lustrace">📜 Lustrace</div>
+                <div class="tab" data-tab="info">⚙️ Info a nastavení</div>
             </div>
 
             <div class="tab-content active" id="prehled">
@@ -514,11 +514,6 @@
                 <div class="table-container">
                     <div class="table-header">
                         <h3 class="chart-title">📋 Seznam inzerátů</h3>
-                        <div class="table-filters">
-                            <input type="text" class="table-filter-input" id="tableFilterType" placeholder="Filtr: Typ transakce">
-                            <input type="text" class="table-filter-input" id="tableFilterProperty" placeholder="Filtr: Typ nemovitosti">
-                            <input type="text" class="table-filter-input" id="tableFilterSource" placeholder="Filtr: Zdroj">
-                        </div>
                         <button class="export-button" onclick="exportToExcel()">
                             📊 Export do XLS
                         </button>
@@ -542,17 +537,17 @@
                 </div>
             </div>
 
-            <div class="tab-content" id="ilustrace">
+            <div class="tab-content" id="lustrace">
                 <div class="empty-state">
-                    <div class="empty-state-icon">🎨</div>
-                    <div class="empty-state-text">Sekce ilustrace je připravena pro budoucí obsah</div>
+                    <div class="empty-state-icon">📜</div>
+                    <div class="empty-state-text">Sekce lustrace je připravena pro budoucí obsah</div>
                 </div>
             </div>
 
             <div class="tab-content" id="info">
                 <div class="empty-state">
-                    <div class="empty-state-icon">ℹ️</div>
-                    <div class="empty-state-text">Sekce info je připravena pro budoucí obsah</div>
+                    <div class="empty-state-icon">⚙️</div>
+                    <div class="empty-state-text">Sekce info a nastavení je připravena pro budoucí obsah</div>
                 </div>
             </div>
         </div>
@@ -591,11 +586,6 @@
 
         let filteredListings = [...listings];
         let currentLocation = WATCHED_LOCATIONS[0];
-        let tableFilters = {
-            type: '',
-            property: '',
-            source: ''
-        };
 
         // Statistiky
         function updateStats() {
@@ -677,25 +667,12 @@
                 if (typeFilter && listing.type !== typeFilter) return false;
                 if (propertyFilter && listing.property !== propertyFilter) return false;
                 
-                // Filtry z tabulky
-                if (tableFilters.type && !listing.type.toLowerCase().includes(tableFilters.type.toLowerCase())) return false;
-                if (tableFilters.property && !listing.property.toLowerCase().includes(tableFilters.property.toLowerCase())) return false;
-                if (tableFilters.source && !listing.source.toLowerCase().includes(tableFilters.source.toLowerCase())) return false;
-                
                 return true;
             });
 
             updateStats();
             renderTable();
             createCharts();
-        }
-
-        // Filtry tabulky
-        function applyTableFilters() {
-            tableFilters.type = document.getElementById('tableFilterType').value;
-            tableFilters.property = document.getElementById('tableFilterProperty').value;
-            tableFilters.source = document.getElementById('tableFilterSource').value;
-            applyFilters();
         }
 
         // Změna lokality
@@ -807,11 +784,6 @@
         document.getElementById('locationSelect').addEventListener('change', changeLocation);
         document.getElementById('filterType').addEventListener('change', applyFilters);
         document.getElementById('filterProperty').addEventListener('change', applyFilters);
-        
-        // Filtry tabulky
-        document.getElementById('tableFilterType').addEventListener('input', applyTableFilters);
-        document.getElementById('tableFilterProperty').addEventListener('input', applyTableFilters);
-        document.getElementById('tableFilterSource').addEventListener('input', applyTableFilters);
 
         // Initialize
         initTabs();
