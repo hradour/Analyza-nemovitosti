@@ -327,6 +327,86 @@
             line-height: 1.6;
         }
 
+        .sources-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .source-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .source-item:hover {
+            background: #e9ecef;
+            border-color: #2a5298;
+        }
+
+        .source-item.active {
+            background: #e8f4f8;
+            border-color: #2a5298;
+        }
+
+        .source-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .source-info {
+            flex: 1;
+        }
+
+        .source-name {
+            font-weight: 600;
+            color: #1e3c72;
+            margin-bottom: 3px;
+        }
+
+        .source-url {
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .source-popularity {
+            font-size: 0.75em;
+            color: #999;
+            margin-top: 3px;
+        }
+
+        .source-item.custom {
+            border-color: #27ae60;
+        }
+
+        .source-item.custom .source-name {
+            color: #27ae60;
+        }
+
+        .source-delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.85em;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .source-delete-btn:hover {
+            background: #c0392b;
+        }
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -731,6 +811,43 @@
 
             <div class="tab-content" id="info">
                 <div class="settings-section">
+                    <h3>🌐 Zdroje dat - webové portály</h3>
+                    <p style="color: #666; margin-bottom: 20px;">
+                        Vyberte, které webové portály s inzeráty nemovitostí chcete prohledávat. Zaškrtnuté portály budou aktivní pro sběr dat.
+                    </p>
+                    
+                    <div id="sourcesContainer" class="sources-list">
+                        <!-- Zdroje budou přidány JavaScriptem -->
+                    </div>
+                    
+                    <div style="margin-top: 25px; padding: 20px; background: #f8f9fa; border-radius: 8px; border: 2px dashed #2a5298;">
+                        <h4 style="color: #1e3c72; margin-bottom: 15px;">➕ Přidat vlastní zdroj</h4>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: end;">
+                            <div style="flex: 1; min-width: 200px;">
+                                <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #1e3c72; font-size: 0.9em;">Název portálu:</label>
+                                <input type="text" id="customSourceName" placeholder="např. MůjPortál.cz" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 6px; font-size: 1em;">
+                            </div>
+                            <div style="flex: 1; min-width: 250px;">
+                                <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #1e3c72; font-size: 0.9em;">URL adresa:</label>
+                                <input type="url" id="customSourceUrl" placeholder="např. www.mujportal.cz" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 6px; font-size: 1em;">
+                            </div>
+                            <button onclick="addCustomSource()" style="padding: 10px 20px; background: #27ae60; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; white-space: nowrap;">
+                                ➕ Přidat zdroj
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 20px;">
+                        <button class="save-settings-button" onclick="saveSources()">💾 Uložit výběr zdrojů</button>
+                    </div>
+                    
+                    <div class="scheduled-times" id="sourcesInfo" style="margin-top: 20px;">
+                        <h4>✅ Aktuálně aktivní zdroje:</h4>
+                        <p id="activeSourcesDisplay">—</p>
+                    </div>
+                </div>
+
+                <div class="settings-section" style="margin-top: 40px; padding-top: 40px; border-top: 2px solid #e0e0e0;">
                     <h3>⏰ Automatická aktualizace dat</h3>
                     <p style="color: #666; margin-bottom: 20px;">
                         Nastavte časy, kdy se mají data automaticky aktualizovat. Můžete přidat více časů během dne.
@@ -761,7 +878,7 @@
                     <p style="color: #666; line-height: 1.8;">
                         <strong>Verze:</strong> 1.0.0<br>
                         <strong>Sledované lokality:</strong> Benátky nad Jizerou, Mladá Boleslav<br>
-                        <strong>Zdroje dat:</strong> Sreality.cz, Bezrealitky.cz, Reality.idnes.cz<br>
+                        <strong>Zdroje dat:</strong> <span id="infoSources">—</span><br>
                         <strong>Poslední aktualizace aplikace:</strong> Říjen 2024
                     </p>
                 </div>
@@ -805,6 +922,20 @@
         let lastUpdateTime = null;
         let scheduledTimes = [];
         let autoRefreshIntervals = [];
+        
+        // Top 10 českých portálů pro nemovitosti
+        const realtyWebsites = [
+            { id: 'sreality', name: 'Sreality.cz', url: 'www.sreality.cz', active: true, popularity: '#1 - Nejvíce návštěv', custom: false },
+            { id: 'bezrealitky', name: 'Bezrealitky.cz', url: 'www.bezrealitky.cz', active: true, popularity: '#2 - Bez provizí', custom: false },
+            { id: 'reality-idnes', name: 'Reality iDNES.cz', url: 'reality.idnes.cz', active: true, popularity: '#3 - Zpravodajský portál', custom: false },
+            { id: 'mmreality', name: 'MMReality.cz', url: 'www.mmreality.cz', active: false, popularity: '#4 - Makléřská síť', custom: false },
+            { id: 'realitymix', name: 'RealityMix.cz', url: 'www.realitymix.cz', active: false, popularity: '#5 - Agregátor', custom: false },
+            { id: 'remax', name: 'RE/MAX.cz', url: 'www.remax.cz', active: false, popularity: '#6 - Mezinárodní síť', custom: false },
+            { id: 'ulovdomov', name: 'UlovDomov.cz', url: 'www.ulovdomov.cz', active: false, popularity: '#7 - Inzertní portál', custom: false },
+            { id: 'reality-centrum', name: 'Reality Centrum.cz', url: 'reality.centrum.cz', active: false, popularity: '#8 - Seznam.cz', custom: false },
+            { id: 'realcity', name: 'RealCity.cz', url: 'www.realcity.cz', active: false, popularity: '#9 - Regionální inzerce', custom: false },
+            { id: 'hyperinzerce', name: 'Hyperinzerce.cz', url: 'www.hyperinzerce.cz', active: false, popularity: '#10 - Široká nabídka', custom: false }
+        ];
 
         // Statistiky
         function updateStats() {
@@ -1031,6 +1162,136 @@
             autoRefreshIntervals.push(interval);
         }
 
+        // Vykreslení seznamu zdrojů
+        function renderSources() {
+            const container = document.getElementById('sourcesContainer');
+            container.innerHTML = '';
+            
+            realtyWebsites.forEach(source => {
+                const item = document.createElement('div');
+                item.className = `source-item ${source.active ? 'active' : ''} ${source.custom ? 'custom' : ''}`;
+                item.innerHTML = `
+                    <input type="checkbox" 
+                           class="source-checkbox" 
+                           id="source-${source.id}" 
+                           ${source.active ? 'checked' : ''}
+                           onchange="toggleSource('${source.id}')">
+                    <div class="source-info">
+                        <div class="source-name">${source.custom ? '🌟 ' : ''}${source.name}</div>
+                        <div class="source-url">${source.url}</div>
+                        <div class="source-popularity">${source.popularity}</div>
+                    </div>
+                    ${source.custom ? `<button class="source-delete-btn" onclick="deleteCustomSource('${source.id}'); event.stopPropagation();">🗑️ Smazat</button>` : ''}
+                `;
+                
+                // Kliknutí na celou položku toggleuje checkbox
+                item.addEventListener('click', (e) => {
+                    if (e.target.type !== 'checkbox' && !e.target.classList.contains('source-delete-btn')) {
+                        const checkbox = item.querySelector('.source-checkbox');
+                        checkbox.checked = !checkbox.checked;
+                        toggleSource(source.id);
+                    }
+                });
+                
+                container.appendChild(item);
+            });
+            
+            updateActiveSourcesDisplay();
+        }
+
+        // Toggle zdroje
+        function toggleSource(sourceId) {
+            const source = realtyWebsites.find(s => s.id === sourceId);
+            if (source) {
+                source.active = !source.active;
+                const item = document.getElementById(`source-${sourceId}`).closest('.source-item');
+                item.classList.toggle('active', source.active);
+                updateActiveSourcesDisplay();
+            }
+        }
+
+        // Přidání vlastního zdroje
+        function addCustomSource() {
+            const nameInput = document.getElementById('customSourceName');
+            const urlInput = document.getElementById('customSourceUrl');
+            
+            const name = nameInput.value.trim();
+            const url = urlInput.value.trim();
+            
+            if (!name || !url) {
+                alert('⚠️ Vyplňte prosím název i URL adresu portálu!');
+                return;
+            }
+            
+            // Vytvoření ID z názvu
+            const id = 'custom-' + name.toLowerCase().replace(/[^a-z0-9]/g, '-') + '-' + Date.now();
+            
+            // Přidání do seznamu
+            realtyWebsites.push({
+                id: id,
+                name: name,
+                url: url,
+                active: true,
+                popularity: '⭐ Vlastní zdroj',
+                custom: true
+            });
+            
+            // Vyčištění formuláře
+            nameInput.value = '';
+            urlInput.value = '';
+            
+            // Překreslení
+            renderSources();
+            
+            alert(`✅ Vlastní zdroj "${name}" byl úspěšně přidán!`);
+        }
+
+        // Smazání vlastního zdroje
+        function deleteCustomSource(sourceId) {
+            const sourceIndex = realtyWebsites.findIndex(s => s.id === sourceId);
+            if (sourceIndex !== -1) {
+                const source = realtyWebsites[sourceIndex];
+                if (confirm(`Opravdu chcete smazat vlastní zdroj "${source.name}"?`)) {
+                    realtyWebsites.splice(sourceIndex, 1);
+                    renderSources();
+                }
+            }
+        }
+
+        // Uložení výběru zdrojů
+        function saveSources() {
+            const activeSources = realtyWebsites.filter(s => s.active);
+            
+            if (activeSources.length === 0) {
+                alert('⚠️ Musíte vybrat alespoň jeden zdroj dat!');
+                return;
+            }
+            
+            updateActiveSourcesDisplay();
+            
+            // Aktualizace info sekce
+            const infoSources = activeSources.map(s => s.name).join(', ');
+            document.getElementById('infoSources').textContent = infoSources;
+            
+            alert(`✅ Výběr zdrojů byl úspěšně uložen!\n\nAktivní zdroje (${activeSources.length}): ${activeSources.map(s => s.name).join(', ')}`);
+        }
+
+        // Aktualizace zobrazení aktivních zdrojů
+        function updateActiveSourcesDisplay() {
+            const activeSources = realtyWebsites.filter(s => s.active);
+            const displayElement = document.getElementById('activeSourcesDisplay');
+            const infoElement = document.getElementById('infoSources');
+            
+            if (activeSources.length > 0) {
+                const sourcesList = activeSources.map(s => `<strong>${s.name}</strong>`).join(', ');
+                displayElement.innerHTML = `${activeSources.length} ${activeSources.length === 1 ? 'zdroj' : activeSources.length < 5 ? 'zdroje' : 'zdrojů'}: ${sourcesList}`;
+                infoElement.innerHTML = activeSources.map(s => s.name).join(', ');
+            } else {
+                displayElement.textContent = 'Žádné zdroje nejsou vybrány.';
+                infoElement.textContent = '—';
+            }
+        }
+
         // Řazení tabulky
         let sortDirection = {};
         let currentSortColumn = null;
@@ -1099,6 +1360,7 @@
 
         // Initialize
         initTabs();
+        renderSources();
         updateLastUpdateTime();
         updateStats();
         renderTable();
