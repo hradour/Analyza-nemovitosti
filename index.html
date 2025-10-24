@@ -93,6 +93,65 @@
             background: white;
         }
 
+        .tabs-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 18px 35px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            user-select: none;
+        }
+
+        .tab:hover {
+            background: #e9ecef;
+            color: #1e3c72;
+        }
+
+        .tab.active {
+            color: #1e3c72;
+            background: white;
+            border-bottom-color: #2a5298;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        .empty-state-text {
+            font-size: 1.2em;
+        }
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -207,6 +266,57 @@
             overflow-x: auto;
         }
 
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .table-filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+
+        .table-filter-input {
+            padding: 8px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 0.9em;
+            min-width: 150px;
+        }
+
+        .table-filter-input:focus {
+            outline: none;
+            border-color: #2a5298;
+        }
+
+        .export-button {
+            padding: 10px 20px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .export-button:hover {
+            background: #229954;
+        }
+
+        .export-button:active {
+            transform: scale(0.98);
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -221,10 +331,27 @@
             border-bottom: 2px solid #e0e0e0;
             cursor: pointer;
             user-select: none;
+            position: relative;
         }
 
         th:hover {
             background: #e9ecef;
+        }
+
+        th::after {
+            content: ' ⇅';
+            opacity: 0.3;
+            font-size: 0.8em;
+        }
+
+        th.sort-asc::after {
+            content: ' ↑';
+            opacity: 1;
+        }
+
+        th.sort-desc::after {
+            content: ' ↓';
+            opacity: 1;
         }
 
         td {
@@ -234,6 +361,22 @@
 
         tr:hover {
             background: #f8f9fa;
+        }
+
+        .link-button {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #2a5298;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.9em;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .link-button:hover {
+            background: #1e3c72;
         }
 
         .badge {
@@ -269,6 +412,21 @@
             color: #d84315;
         }
 
+        .badge-sreality {
+            background: #e8eaf6;
+            color: #3f51b5;
+        }
+
+        .badge-bezrealitky {
+            background: #e0f2f1;
+            color: #00796b;
+        }
+
+        .badge-idnes {
+            background: #fff9c4;
+            color: #f57f17;
+        }
+
         canvas {
             max-height: 300px;
         }
@@ -302,76 +460,101 @@
             </div>
         </header>
 
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-label">Celkem inzerátů</div>
-                <div class="stat-value" id="totalCount">0</div>
-                <div class="stat-change positive">+12 tento týden</div>
+        <div class="tabs-container">
+            <div class="tabs">
+                <div class="tab active" data-tab="prehled">📊 Přehled</div>
+                <div class="tab" data-tab="ilustrace">🎨 Ilustrace</div>
+                <div class="tab" data-tab="info">ℹ️ Info</div>
             </div>
-            <div class="stat-card">
-                <div class="stat-label">Nové dnes</div>
-                <div class="stat-value" id="newToday">0</div>
-                <div class="stat-change positive">Aktivní sledování</div>
-            </div>
-        </div>
 
-        <div class="filters">
-            <h2 class="chart-title">🔍 Filtry</h2>
-            <div class="filter-group">
-                <div class="filter-item">
-                    <label for="filterType">Typ transakce</label>
-                    <select id="filterType">
-                        <option value="">Vše</option>
-                        <option value="Pronájem">Pronájem</option>
-                        <option value="Prodej">Prodej</option>
-                    </select>
+            <div class="tab-content active" id="prehled">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Celkem inzerátů</div>
+                        <div class="stat-value" id="totalCount">0</div>
+                        <div class="stat-change positive">+12 tento týden</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Nové dnes</div>
+                        <div class="stat-value" id="newToday">0</div>
+                        <div class="stat-change positive">Aktivní sledování</div>
+                    </div>
                 </div>
-                <div class="filter-item">
-                    <label for="filterProperty">Typ nemovitosti</label>
-                    <select id="filterProperty">
-                        <option value="">Vše</option>
-                        <option value="Byt">Byt</option>
-                        <option value="Dům">Dům</option>
-                        <option value="Pozemek">Pozemek</option>
-                    </select>
+
+                <div class="filters">
+                    <h2 class="chart-title">🔍 Filtry</h2>
+                    <div class="filter-group">
+                        <div class="filter-item">
+                            <label for="filterType">Typ transakce</label>
+                            <select id="filterType">
+                                <option value="">Vše</option>
+                                <option value="Pronájem">Pronájem</option>
+                                <option value="Prodej">Prodej</option>
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <label for="filterProperty">Typ nemovitosti</label>
+                            <select id="filterProperty">
+                                <option value="">Vše</option>
+                                <option value="Byt">Byt</option>
+                                <option value="Dům">Dům</option>
+                                <option value="Pozemek">Pozemek</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
-                <div class="filter-item">
-                    <label for="filterCity">Město</label>
-                    <select id="filterCity">
-                        <option value="">Vše</option>
-                    </select>
+
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h3 class="chart-title">📈 Vývoj počtu inzerátů</h3>
+                        <canvas id="timelineChart"></canvas>
+                    </div>
                 </div>
-                <div class="filter-item">
-                    <label for="filterSearch">Hledat</label>
-                    <input type="text" id="filterSearch" placeholder="Zadejte klíčové slovo...">
+
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3 class="chart-title">📋 Seznam inzerátů</h3>
+                        <div class="table-filters">
+                            <input type="text" class="table-filter-input" id="tableFilterType" placeholder="Filtr: Typ transakce">
+                            <input type="text" class="table-filter-input" id="tableFilterProperty" placeholder="Filtr: Typ nemovitosti">
+                            <input type="text" class="table-filter-input" id="tableFilterSource" placeholder="Filtr: Zdroj">
+                        </div>
+                        <button class="export-button" onclick="exportToExcel()">
+                            📊 Export do XLS
+                        </button>
+                    </div>
+                    <table id="listingsTable">
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable(0)" data-column="0">Typ transakce</th>
+                                <th onclick="sortTable(1)" data-column="1">Typ nemovitosti</th>
+                                <th onclick="sortTable(2)" data-column="2">Zdroj</th>
+                                <th onclick="sortTable(3)" data-column="3">Cena</th>
+                                <th onclick="sortTable(4)" data-column="4">Plocha</th>
+                                <th onclick="sortTable(5)" data-column="5">Cena/m²</th>
+                                <th onclick="sortTable(6)" data-column="6">Datum zveřejnění</th>
+                                <th>Odkaz</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        </div>
 
-        <div class="charts-grid">
-            <div class="chart-card">
-                <h3 class="chart-title">📈 Vývoj počtu inzerátů</h3>
-                <canvas id="timelineChart"></canvas>
+            <div class="tab-content" id="ilustrace">
+                <div class="empty-state">
+                    <div class="empty-state-icon">🎨</div>
+                    <div class="empty-state-text">Sekce ilustrace je připravena pro budoucí obsah</div>
+                </div>
             </div>
-        </div>
 
-        <div class="table-container">
-            <h3 class="chart-title">📋 Seznam inzerátů</h3>
-            <table id="listingsTable">
-                <thead>
-                    <tr>
-                        <th onclick="sortTable(0)">Typ transakce</th>
-                        <th onclick="sortTable(1)">Typ nemovitosti</th>
-                        <th onclick="sortTable(2)">Město</th>
-                        <th onclick="sortTable(3)">Cena</th>
-                        <th onclick="sortTable(4)">Plocha</th>
-                        <th onclick="sortTable(5)">Cena/m²</th>
-                        <th onclick="sortTable(6)">Datum</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody">
-                </tbody>
-            </table>
+            <div class="tab-content" id="info">
+                <div class="empty-state">
+                    <div class="empty-state-icon">ℹ️</div>
+                    <div class="empty-state-text">Sekce info je připravena pro budoucí obsah</div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -384,30 +567,35 @@
 
         // Testovací data
         const listings = [
-            { type: "Pronájem", property: "Byt", city: "Benátky nad Jizerou", price: 12000, area: 55, date: "2024-10-20" },
-            { type: "Prodej", property: "Byt", city: "Benátky nad Jizerou", price: 3500000, area: 65, date: "2024-10-19" },
-            { type: "Pronájem", property: "Dům", city: "Mladá Boleslav", price: 18000, area: 120, date: "2024-10-21" },
-            { type: "Prodej", property: "Dům", city: "Mladá Boleslav", price: 7500000, area: 150, date: "2024-10-18" },
-            { type: "Pronájem", property: "Byt", city: "Benátky nad Jizerou", price: 10000, area: 50, date: "2024-10-22" },
-            { type: "Prodej", property: "Byt", city: "Mladá Boleslav", price: 4200000, area: 68, date: "2024-10-17" },
-            { type: "Pronájem", property: "Byt", city: "Benátky nad Jizerou", price: 11000, area: 52, date: "2024-10-23" },
-            { type: "Prodej", property: "Pozemek", city: "Mladá Boleslav", price: 2500000, area: 800, date: "2024-10-16" },
-            { type: "Pronájem", property: "Dům", city: "Benátky nad Jizerou", price: 20000, area: 140, date: "2024-10-21" },
-            { type: "Prodej", property: "Dům", city: "Mladá Boleslav", price: 8800000, area: 160, date: "2024-10-20" },
-            { type: "Pronájem", property: "Byt", city: "Benátky nad Jizerou", price: 13000, area: 60, date: "2024-10-22" },
-            { type: "Prodej", property: "Byt", city: "Mladá Boleslav", price: 3800000, area: 62, date: "2024-10-19" },
-            { type: "Pronájem", property: "Byt", city: "Benátky nad Jizerou", price: 9500, area: 48, date: "2024-10-23" },
-            { type: "Prodej", property: "Dům", city: "Mladá Boleslav", price: 6200000, area: 125, date: "2024-10-18" },
-            { type: "Pronájem", property: "Byt", city: "Benátky nad Jizerou", price: 11500, area: 54, date: "2024-10-21" },
-            { type: "Prodej", property: "Pozemek", city: "Mladá Boleslav", price: 1800000, area: 650, date: "2024-10-17" },
-            { type: "Pronájem", property: "Dům", city: "Benátky nad Jizerou", price: 22000, area: 130, date: "2024-10-22" },
-            { type: "Prodej", property: "Byt", city: "Mladá Boleslav", price: 3200000, area: 58, date: "2024-10-20" },
-            { type: "Pronájem", property: "Byt", city: "Benátky nad Jizerou", price: 10500, area: 51, date: "2024-10-23" },
-            { type: "Prodej", property: "Dům", city: "Mladá Boleslav", price: 8900000, area: 170, date: "2024-10-19" }
+            { type: "Pronájem", property: "Byt", city: "Benátky nad Jizerou", source: "Sreality.cz", price: 12000, area: 55, date: "2024-10-20", url: "https://www.sreality.cz/detail/pronajem/byt/2+kk/benatky-nad-jizerou/12345" },
+            { type: "Prodej", property: "Byt", city: "Benátky nad Jizerou", source: "Bezrealitky.cz", price: 3500000, area: 65, date: "2024-10-19", url: "https://www.bezrealitky.cz/nemovitosti-byty-domy/12346" },
+            { type: "Pronájem", property: "Dům", city: "Mladá Boleslav", source: "Sreality.cz", price: 18000, area: 120, date: "2024-10-21", url: "https://www.sreality.cz/detail/pronajem/dum/rodinny/mlada-boleslav/12347" },
+            { type: "Prodej", property: "Dům", city: "Mladá Boleslav", source: "Reality.idnes.cz", price: 7500000, area: 150, date: "2024-10-18", url: "https://reality.idnes.cz/detail/prodej/dum/12348" },
+            { type: "Pronájem", property: "Byt", city: "Benátky nad Jizerou", source: "Bezrealitky.cz", price: 10000, area: 50, date: "2024-10-22", url: "https://www.bezrealitky.cz/nemovitosti-byty-domy/12349" },
+            { type: "Prodej", property: "Byt", city: "Mladá Boleslav", source: "Sreality.cz", price: 4200000, area: 68, date: "2024-10-17", url: "https://www.sreality.cz/detail/prodej/byt/2+1/mlada-boleslav/12350" },
+            { type: "Pronájem", property: "Byt", city: "Benátky nad Jizerou", source: "Reality.idnes.cz", price: 11000, area: 52, date: "2024-10-23", url: "https://reality.idnes.cz/detail/pronajem/byt/12351" },
+            { type: "Prodej", property: "Pozemek", city: "Mladá Boleslav", source: "Sreality.cz", price: 2500000, area: 800, date: "2024-10-16", url: "https://www.sreality.cz/detail/prodej/pozemek/bydleni/mlada-boleslav/12352" },
+            { type: "Pronájem", property: "Dům", city: "Benátky nad Jizerou", source: "Bezrealitky.cz", price: 20000, area: 140, date: "2024-10-21", url: "https://www.bezrealitky.cz/nemovitosti-byty-domy/12353" },
+            { type: "Prodej", property: "Dům", city: "Mladá Boleslav", source: "Reality.idnes.cz", price: 8800000, area: 160, date: "2024-10-20", url: "https://reality.idnes.cz/detail/prodej/dum/12354" },
+            { type: "Pronájem", property: "Byt", city: "Benátky nad Jizerou", source: "Sreality.cz", price: 13000, area: 60, date: "2024-10-22", url: "https://www.sreality.cz/detail/pronajem/byt/3+kk/benatky-nad-jizerou/12355" },
+            { type: "Prodej", property: "Byt", city: "Mladá Boleslav", source: "Bezrealitky.cz", price: 3800000, area: 62, date: "2024-10-19", url: "https://www.bezrealitky.cz/nemovitosti-byty-domy/12356" },
+            { type: "Pronájem", property: "Byt", city: "Benátky nad Jizerou", source: "Reality.idnes.cz", price: 9500, area: 48, date: "2024-10-23", url: "https://reality.idnes.cz/detail/pronajem/byt/12357" },
+            { type: "Prodej", property: "Dům", city: "Mladá Boleslav", source: "Sreality.cz", price: 6200000, area: 125, date: "2024-10-18", url: "https://www.sreality.cz/detail/prodej/dum/rodinny/mlada-boleslav/12358" },
+            { type: "Pronájem", property: "Byt", city: "Benátky nad Jizerou", source: "Bezrealitky.cz", price: 11500, area: 54, date: "2024-10-21", url: "https://www.bezrealitky.cz/nemovitosti-byty-domy/12359" },
+            { type: "Prodej", property: "Pozemek", city: "Mladá Boleslav", source: "Reality.idnes.cz", price: 1800000, area: 650, date: "2024-10-17", url: "https://reality.idnes.cz/detail/prodej/pozemek/12360" },
+            { type: "Pronájem", property: "Dům", city: "Benátky nad Jizerou", source: "Sreality.cz", price: 22000, area: 130, date: "2024-10-22", url: "https://www.sreality.cz/detail/pronajem/dum/rodinny/benatky-nad-jizerou/12361" },
+            { type: "Prodej", property: "Byt", city: "Mladá Boleslav", source: "Bezrealitky.cz", price: 3200000, area: 58, date: "2024-10-20", url: "https://www.bezrealitky.cz/nemovitosti-byty-domy/12362" },
+            { type: "Pronájem", property: "Byt", city: "Benátky nad Jizerou", source: "Reality.idnes.cz", price: 10500, area: 51, date: "2024-10-23", url: "https://reality.idnes.cz/detail/pronajem/byt/12363" },
+            { type: "Prodej", property: "Dům", city: "Mladá Boleslav", source: "Sreality.cz", price: 8900000, area: 170, date: "2024-10-19", url: "https://www.sreality.cz/detail/prodej/dum/rodinny/mlada-boleslav/12364" }
         ];
 
         let filteredListings = [...listings];
         let currentLocation = WATCHED_LOCATIONS[0];
+        let tableFilters = {
+            type: '',
+            property: '',
+            source: ''
+        };
 
         // Statistiky
         function updateStats() {
@@ -425,15 +613,17 @@
             
             filteredListings.forEach(listing => {
                 const pricePerM2 = Math.round(listing.price / listing.area);
+                const sourceBadgeClass = listing.source.toLowerCase().replace(/\./g, '').replace('cz', '');
                 const row = `
                     <tr>
                         <td><span class="badge badge-${listing.type.toLowerCase()}">${listing.type}</span></td>
                         <td><span class="badge badge-${listing.property.toLowerCase()}">${listing.property}</span></td>
-                        <td>${listing.city}</td>
+                        <td><span class="badge badge-${sourceBadgeClass}">${listing.source}</span></td>
                         <td><strong>${listing.price.toLocaleString('cs-CZ')} Kč</strong></td>
                         <td>${listing.area} m²</td>
                         <td>${pricePerM2.toLocaleString('cs-CZ')} Kč/m²</td>
                         <td>${new Date(listing.date).toLocaleDateString('cs-CZ')}</td>
+                        <td><a href="${listing.url}" target="_blank" class="link-button">Zobrazit inzerát</a></td>
                     </tr>
                 `;
                 tbody.innerHTML += row;
@@ -479,17 +669,19 @@
         function applyFilters() {
             const typeFilter = document.getElementById('filterType').value;
             const propertyFilter = document.getElementById('filterProperty').value;
-            const cityFilter = document.getElementById('filterCity').value;
-            const searchFilter = document.getElementById('filterSearch').value.toLowerCase();
 
             filteredListings = listings.filter(listing => {
-                // Filtr podle vybrané lokality
+                // Filtr podle vybrané lokality (globální)
                 if (listing.city !== currentLocation) return false;
                 
                 if (typeFilter && listing.type !== typeFilter) return false;
                 if (propertyFilter && listing.property !== propertyFilter) return false;
-                if (cityFilter && listing.city !== cityFilter) return false;
-                if (searchFilter && !listing.city.toLowerCase().includes(searchFilter)) return false;
+                
+                // Filtry z tabulky
+                if (tableFilters.type && !listing.type.toLowerCase().includes(tableFilters.type.toLowerCase())) return false;
+                if (tableFilters.property && !listing.property.toLowerCase().includes(tableFilters.property.toLowerCase())) return false;
+                if (tableFilters.source && !listing.source.toLowerCase().includes(tableFilters.source.toLowerCase())) return false;
+                
                 return true;
             });
 
@@ -498,19 +690,80 @@
             createCharts();
         }
 
+        // Filtry tabulky
+        function applyTableFilters() {
+            tableFilters.type = document.getElementById('tableFilterType').value;
+            tableFilters.property = document.getElementById('tableFilterProperty').value;
+            tableFilters.source = document.getElementById('tableFilterSource').value;
+            applyFilters();
+        }
+
         // Změna lokality
         function changeLocation() {
             currentLocation = document.getElementById('locationSelect').value;
             applyFilters();
         }
 
+        // Export do Excelu
+        function exportToExcel() {
+            // Vytvoření CSV obsahu
+            let csv = 'Typ transakce,Typ nemovitosti,Zdroj,Lokalita,Cena (Kč),Plocha (m²),Cena za m² (Kč),Datum zveřejnění,URL\n';
+            
+            filteredListings.forEach(listing => {
+                const pricePerM2 = Math.round(listing.price / listing.area);
+                const row = [
+                    listing.type,
+                    listing.property,
+                    listing.source,
+                    listing.city,
+                    listing.price,
+                    listing.area,
+                    pricePerM2,
+                    new Date(listing.date).toLocaleDateString('cs-CZ'),
+                    listing.url
+                ].map(field => `"${field}"`).join(',');
+                csv += row + '\n';
+            });
+
+            // Přidání BOM pro správné zobrazení diakritiky v Excelu
+            const BOM = '\uFEFF';
+            const blob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8;' });
+            
+            // Vytvoření odkazu pro stažení
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            const filename = `inzeraty_${currentLocation.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`;
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
         // Řazení tabulky
         let sortDirection = {};
+        let currentSortColumn = null;
+
         function sortTable(columnIndex) {
             const direction = sortDirection[columnIndex] || 'asc';
             sortDirection[columnIndex] = direction === 'asc' ? 'desc' : 'asc';
 
-            const keys = ['type', 'property', 'city', 'price', 'area', null, 'date'];
+            // Odstranit třídy ze všech záhlaví
+            document.querySelectorAll('th').forEach(th => {
+                th.classList.remove('sort-asc', 'sort-desc');
+            });
+
+            // Přidat třídu k aktuálnímu záhlaví
+            const currentTh = document.querySelector(`th[data-column="${columnIndex}"]`);
+            if (currentTh) {
+                currentTh.classList.add(direction === 'asc' ? 'sort-asc' : 'sort-desc');
+            }
+
+            currentSortColumn = columnIndex;
+
+            const keys = ['type', 'property', 'source', 'price', 'area', null, 'date'];
             const key = keys[columnIndex];
             
             if (key) {
@@ -530,13 +783,23 @@
 
         // Populate cities dropdown
         function populateCities() {
-            const cities = [...new Set(listings.map(l => l.city))].sort();
-            const select = document.getElementById('filterCity');
-            cities.forEach(city => {
-                const option = document.createElement('option');
-                option.value = city;
-                option.textContent = city;
-                select.appendChild(option);
+            // Už není potřeba, město je globální filtr v hlavičce
+        }
+
+        // Záložky
+        function initTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Deaktivovat všechny záložky
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    // Aktivovat vybranou záložku
+                    tab.classList.add('active');
+                    const tabId = tab.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
             });
         }
 
@@ -544,11 +807,14 @@
         document.getElementById('locationSelect').addEventListener('change', changeLocation);
         document.getElementById('filterType').addEventListener('change', applyFilters);
         document.getElementById('filterProperty').addEventListener('change', applyFilters);
-        document.getElementById('filterCity').addEventListener('change', applyFilters);
-        document.getElementById('filterSearch').addEventListener('input', applyFilters);
+        
+        // Filtry tabulky
+        document.getElementById('tableFilterType').addEventListener('input', applyTableFilters);
+        document.getElementById('tableFilterProperty').addEventListener('input', applyTableFilters);
+        document.getElementById('tableFilterSource').addEventListener('input', applyTableFilters);
 
         // Initialize
-        populateCities();
+        initTabs();
         updateStats();
         renderTable();
         createCharts();
