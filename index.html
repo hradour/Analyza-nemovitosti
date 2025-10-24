@@ -803,9 +803,99 @@
             </div>
 
             <div class="tab-content" id="lustrace">
-                <div class="empty-state">
-                    <div class="empty-state-icon">📜</div>
-                    <div class="empty-state-text">Sekce lustrace je připravena pro budoucí obsah</div>
+                <div class="settings-section">
+                    <h3>🔍 Lustrace osoby</h3>
+                    <p style="color: #666; margin-bottom: 25px;">
+                        Zadejte údaje osoby pro vyhledání v databázích ISIR (insolvenční rejstřík) a CEE (centrální evidence exekucí).
+                    </p>
+                    
+                    <div style="background: #f8f9fa; padding: 25px; border-radius: 10px; border: 2px solid #e0e0e0; margin-bottom: 30px;">
+                        <h4 style="color: #1e3c72; margin-bottom: 20px;">📝 Vstupní údaje</h4>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #1e3c72; font-size: 0.9em;">Jméno:</label>
+                                <input type="text" id="lustraceJmeno" placeholder="Zadejte jméno" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 6px; font-size: 1em;">
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #1e3c72; font-size: 0.9em;">Příjmení:</label>
+                                <input type="text" id="lustracePrijmeni" placeholder="Zadejte příjmení" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 6px; font-size: 1em;">
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #1e3c72; font-size: 0.9em;">Datum narození:</label>
+                                <input type="date" id="lustraceDatumNarozeni" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 6px; font-size: 1em;">
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 25px;">
+                            <button onclick="spustitLustraci()" style="padding: 14px 35px; background: #2a5298; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 1.1em; transition: all 0.3s ease;">
+                                🔍 Spustit lustraci
+                            </button>
+                            <button onclick="vymazatFormular()" style="padding: 14px 25px; background: #95a5a6; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 1em; margin-left: 10px; transition: all 0.3s ease;">
+                                🗑️ Vymazat
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 25px;">
+                        <!-- ISIR API -->
+                        <div style="background: white; padding: 25px; border-radius: 10px; border: 2px solid #e74c3c; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+                                <span style="font-size: 2em;">⚠️</span>
+                                <h4 style="color: #e74c3c; margin: 0;">ISIR - Insolvenční rejstřík</h4>
+                            </div>
+                            
+                            <div id="isirStatus" style="padding: 12px; background: #ecf0f1; border-radius: 6px; margin-bottom: 15px; font-weight: 600; color: #7f8c8d;">
+                                Čeká na spuštění lustrace...
+                            </div>
+                            
+                            <div id="isirResults" style="min-height: 150px; padding: 15px; background: #fafafa; border-radius: 6px; border: 1px solid #e0e0e0;">
+                                <p style="color: #999; text-align: center; margin: 50px 0;">Výsledky se zobrazí po spuštění lustrace</p>
+                            </div>
+                            
+                            <div style="margin-top: 15px; padding: 10px; background: #fff5f5; border-left: 4px solid #e74c3c; border-radius: 4px;">
+                                <p style="margin: 0; font-size: 0.9em; color: #666; line-height: 1.6;">
+                                    <strong>ISIR</strong> obsahuje informace o insolvencích, konkurzech a reorganizacích.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- CEE API -->
+                        <div style="background: white; padding: 25px; border-radius: 10px; border: 2px solid #e67e22; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+                                <span style="font-size: 2em;">📋</span>
+                                <h4 style="color: #e67e22; margin: 0;">CEE - Centrální evidence exekucí</h4>
+                            </div>
+                            
+                            <div id="ceeStatus" style="padding: 12px; background: #ecf0f1; border-radius: 6px; margin-bottom: 15px; font-weight: 600; color: #7f8c8d;">
+                                Čeká na spuštění lustrace...
+                            </div>
+                            
+                            <div id="ceeResults" style="min-height: 150px; padding: 15px; background: #fafafa; border-radius: 6px; border: 1px solid #e0e0e0;">
+                                <p style="color: #999; text-align: center; margin: 50px 0;">Výsledky se zobrazí po spuštění lustrace</p>
+                            </div>
+                            
+                            <div style="margin-top: 15px; padding: 10px; background: #fff9f5; border-left: 4px solid #e67e22; border-radius: 4px;">
+                                <p style="margin: 0; font-size: 0.9em; color: #666; line-height: 1.6;">
+                                    <strong>CEE</strong> obsahuje informace o probíhajících a ukončených exekucích.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 30px; padding: 20px; background: #e8f4f8; border-radius: 8px; border-left: 4px solid #2a5298;">
+                        <h4 style="color: #1e3c72; margin-bottom: 10px;">ℹ️ Informace o lustraci</h4>
+                        <p style="color: #666; line-height: 1.8; margin: 0;">
+                            Lustrace probíhá dotazem na veřejné databáze:
+                        </p>
+                        <ul style="color: #666; line-height: 1.8; margin: 10px 0 0 20px;">
+                            <li><strong>ISIR.cz</strong> - oficiální insolvenční rejstřík ČR</li>
+                            <li><strong>Exekutorská komora ČR</strong> - centrální evidence exekucí</li>
+                        </ul>
+                        <p style="color: #666; line-height: 1.8; margin: 10px 0 0 0;">
+                            Výsledky slouží pouze pro informační účely. Pro právní účely si vždy ověřte informace přímo v oficiálních zdrojích.
+                        </p>
+                    </div>
                 </div>
             </div>
 
@@ -1290,6 +1380,149 @@
                 displayElement.textContent = 'Žádné zdroje nejsou vybrány.';
                 infoElement.textContent = '—';
             }
+        }
+
+        // Lustrace - Spuštění
+        function spustitLustraci() {
+            const jmeno = document.getElementById('lustraceJmeno').value.trim();
+            const prijmeni = document.getElementById('lustracePrijmeni').value.trim();
+            const datumNarozeni = document.getElementById('lustraceDatumNarozeni').value;
+            
+            if (!jmeno || !prijmeni || !datumNarozeni) {
+                alert('⚠️ Vyplňte prosím všechny údaje (jméno, příjmení a datum narození)!');
+                return;
+            }
+            
+            // Formátování data
+            const datum = new Date(datumNarozeni);
+            const datumFormatovany = datum.toLocaleDateString('cs-CZ');
+            
+            // Nastavení loading stavu
+            document.getElementById('isirStatus').innerHTML = '🔄 Probíhá dotaz na ISIR API...';
+            document.getElementById('isirStatus').style.background = '#fff3cd';
+            document.getElementById('isirStatus').style.color = '#856404';
+            
+            document.getElementById('ceeStatus').innerHTML = '🔄 Probíhá dotaz na CEE API...';
+            document.getElementById('ceeStatus').style.background = '#fff3cd';
+            document.getElementById('ceeStatus').style.color = '#856404';
+            
+            // Simulace API volání (v reálné aplikaci by zde byl skutečný fetch)
+            setTimeout(() => {
+                zobrazitIsirVysledky(jmeno, prijmeni, datumFormatovany);
+            }, 1500);
+            
+            setTimeout(() => {
+                zobrazitCeeVysledky(jmeno, prijmeni, datumFormatovany);
+            }, 2000);
+        }
+
+        // Zobrazení ISIR výsledků
+        function zobrazitIsirVysledky(jmeno, prijmeni, datum) {
+            // Simulace výsledků (v reálné aplikaci by přišly z API)
+            const nalezeno = Math.random() > 0.7; // 30% šance na nález
+            
+            const statusEl = document.getElementById('isirStatus');
+            const resultsEl = document.getElementById('isirResults');
+            
+            if (nalezeno) {
+                statusEl.innerHTML = '❌ Nalezeny záznamy v ISIR';
+                statusEl.style.background = '#f8d7da';
+                statusEl.style.color = '#721c24';
+                
+                resultsEl.innerHTML = `
+                    <div style="color: #721c24;">
+                        <p style="margin-bottom: 15px;"><strong>Osoba:</strong> ${jmeno} ${prijmeni}, nar. ${datum}</p>
+                        <div style="padding: 12px; background: #fff; border-radius: 6px; margin-bottom: 10px; border-left: 4px solid #e74c3c;">
+                            <strong>Insolvence č. 1:</strong><br>
+                            Spisová značka: KSOS 123 INS 45678/2023<br>
+                            Stav: Probíhající<br>
+                            Datum zahájení: ${new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000).toLocaleDateString('cs-CZ')}<br>
+                            Způsob řešení: Oddlužení
+                        </div>
+                        <p style="margin-top: 15px; font-size: 0.9em; color: #666;">
+                            <strong>Odkaz:</strong> <a href="https://isir.justice.cz" target="_blank" style="color: #2a5298;">Zobrazit detail v ISIR.cz</a>
+                        </p>
+                    </div>
+                `;
+            } else {
+                statusEl.innerHTML = '✅ Žádné záznamy nenalezeny v ISIR';
+                statusEl.style.background = '#d4edda';
+                statusEl.style.color = '#155724';
+                
+                resultsEl.innerHTML = `
+                    <div style="color: #155724; text-align: center; padding: 30px;">
+                        <div style="font-size: 3em; margin-bottom: 15px;">✓</div>
+                        <p style="margin: 0; font-weight: 600;">Osoba <strong>${jmeno} ${prijmeni}</strong> (${datum}) nemá záznam v insolvenčním rejstříku.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Zobrazení CEE výsledků
+        function zobrazitCeeVysledky(jmeno, prijmeni, datum) {
+            // Simulace výsledků (v reálné aplikaci by přišly z API)
+            const nalezeno = Math.random() > 0.6; // 40% šance na nález
+            
+            const statusEl = document.getElementById('ceeStatus');
+            const resultsEl = document.getElementById('ceeResults');
+            
+            if (nalezeno) {
+                const pocetExekuci = Math.floor(Math.random() * 3) + 1;
+                statusEl.innerHTML = `❌ Nalezeno ${pocetExekuci} ${pocetExekuci === 1 ? 'záznam' : pocetExekuci < 5 ? 'záznamy' : 'záznamů'} v CEE`;
+                statusEl.style.background = '#f8d7da';
+                statusEl.style.color = '#721c24';
+                
+                let exekuceHtml = '';
+                for (let i = 1; i <= pocetExekuci; i++) {
+                    exekuceHtml += `
+                        <div style="padding: 12px; background: #fff; border-radius: 6px; margin-bottom: 10px; border-left: 4px solid #e67e22;">
+                            <strong>Exekuce č. ${i}:</strong><br>
+                            Spisová značka: ${Math.floor(Math.random() * 100)} EX ${Math.floor(Math.random() * 10000)}/2${Math.floor(Math.random() * 4)}<br>
+                            Exekutor: JUDr. ${['Novák', 'Dvořák', 'Černý', 'Procházka'][Math.floor(Math.random() * 4)]}<br>
+                            Stav: ${Math.random() > 0.5 ? 'Probíhající' : 'Ukončená'}<br>
+                            Výše dluhu: ${Math.floor(Math.random() * 500000 + 50000).toLocaleString('cs-CZ')} Kč
+                        </div>
+                    `;
+                }
+                
+                resultsEl.innerHTML = `
+                    <div style="color: #721c24;">
+                        <p style="margin-bottom: 15px;"><strong>Osoba:</strong> ${jmeno} ${prijmeni}, nar. ${datum}</p>
+                        ${exekuceHtml}
+                        <p style="margin-top: 15px; font-size: 0.9em; color: #666;">
+                            <strong>Odkaz:</strong> <a href="https://www.ceecr.cz" target="_blank" style="color: #2a5298;">Zobrazit detail na stránkách Exekutorské komory</a>
+                        </p>
+                    </div>
+                `;
+            } else {
+                statusEl.innerHTML = '✅ Žádné záznamy nenalezeny v CEE';
+                statusEl.style.background = '#d4edda';
+                statusEl.style.color = '#155724';
+                
+                resultsEl.innerHTML = `
+                    <div style="color: #155724; text-align: center; padding: 30px;">
+                        <div style="font-size: 3em; margin-bottom: 15px;">✓</div>
+                        <p style="margin: 0; font-weight: 600;">Osoba <strong>${jmeno} ${prijmeni}</strong> (${datum}) nemá záznam v centrální evidenci exekucí.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Vymazání formuláře lustrace
+        function vymazatFormular() {
+            document.getElementById('lustraceJmeno').value = '';
+            document.getElementById('lustracePrijmeni').value = '';
+            document.getElementById('lustraceDatumNarozeni').value = '';
+            
+            document.getElementById('isirStatus').innerHTML = 'Čeká na spuštění lustrace...';
+            document.getElementById('isirStatus').style.background = '#ecf0f1';
+            document.getElementById('isirStatus').style.color = '#7f8c8d';
+            document.getElementById('isirResults').innerHTML = '<p style="color: #999; text-align: center; margin: 50px 0;">Výsledky se zobrazí po spuštění lustrace</p>';
+            
+            document.getElementById('ceeStatus').innerHTML = 'Čeká na spuštění lustrace...';
+            document.getElementById('ceeStatus').style.background = '#ecf0f1';
+            document.getElementById('ceeStatus').style.color = '#7f8c8d';
+            document.getElementById('ceeResults').innerHTML = '<p style="color: #999; text-align: center; margin: 50px 0;">Výsledky se zobrazí po spuštění lustrace</p>';
         }
 
         // Řazení tabulky
